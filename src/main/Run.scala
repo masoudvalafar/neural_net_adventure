@@ -129,8 +129,8 @@ object Run {
     println("trainingData" + trainingData)
 
     // algo config
-    val learningFactor = 0.001
-    val nodesPerLayer = List[Int](4, 10, 2)
+    val learningFactor = 0.01
+    val nodesPerLayer = List[Int](4, 10, 8, 2)
     var weights = createWeights(nodesPerLayer, false)
     val TRAINING_ROUNDS = 1000
 
@@ -141,7 +141,7 @@ object Run {
       val expectedOutput = irises.get(outputString).get
       val nn = new NeuralNetwork(nodesPerLayer, weights)
       val output = nn.calculateOutput(inputVector)
-      RoundError = RoundError + (output(1) zip expectedOutput).map { case (c, e) => Math.pow((c - e), 2)}.reduce(_ + _)
+      RoundError = RoundError + (output(output.size - 1) zip expectedOutput).map { case (c, e) => Math.pow((c - e), 2)}.reduce(_ + _)
     }
     println("RoundError: " + RoundError)
 
@@ -160,7 +160,7 @@ object Run {
         val error = nn.calcError(inputVector, expectedOutput, output)
         val weightUpdates = nn.backPropagate(inputVector, output, error, learningFactor)
         layerWeight = addWeights(weightUpdates, layerWeight)
-        RoundError = RoundError + (output(1) zip expectedOutput).map { case (c, e) => Math.pow((c - e), 2)}.reduce(_ + _)
+        RoundError = RoundError + (output(output.size - 1) zip expectedOutput).map { case (c, e) => Math.pow((c - e), 2)}.reduce(_ + _)
       }
 
       println("RoundError: " + RoundError)
@@ -174,9 +174,9 @@ object Run {
       val expectedOutput = irises.get(outputString).get
       val nn = new NeuralNetwork(nodesPerLayer, weights)
       val output = nn.calculateOutput(inputVector)
-      RoundError = RoundError + (output(1) zip expectedOutput).map { case (c, e) => Math.pow((c - e), 2)}.reduce(_ + _)
+      RoundError = RoundError + (output(output.size - 1) zip expectedOutput).map { case (c, e) => Math.pow((c - e), 2)}.reduce(_ + _)
       println("inputVector: " + inputVector)
-      println("end output: " + output(1))
+      println("end output: " + output(output.size - 1))
       println("expected output: " + expectedOutput)
     }
     println("RoundError: " + RoundError)
