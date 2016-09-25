@@ -132,7 +132,7 @@ object Run {
     val learningFactor = 0.001
     val nodesPerLayer = List[Int](4, 10, 2)
     var weights = createWeights(nodesPerLayer, false)
-    val TRAINING_ROUNDS = 5000
+    val TRAINING_ROUNDS = 1000
 
     var RoundError = 0.0
 
@@ -142,9 +142,6 @@ object Run {
       val nn = new NeuralNetwork(nodesPerLayer, weights)
       val output = nn.runNetwork(inputVector)
       RoundError = RoundError + (output(1) zip expectedOutput).map { case (c, e) => Math.pow((c - e), 2)}.reduce(_ + _)
-//      println("inputVector: " + inputVector)
-//      println("beginning output: " + output)
-//      println("expected output: " + expectedOutput)
     }
     println("RoundError: " + RoundError)
 
@@ -164,14 +161,6 @@ object Run {
         val weightUpdates = nn.backPropagate(inputVector, output, error, learningFactor)
         layerWeight = addWeights(weightUpdates, layerWeight)
         RoundError = RoundError + (output(1) zip expectedOutput).map { case (c, e) => Math.pow((c - e), 2)}.reduce(_ + _)
-
-//        println("*** node ***")
-//        println("weights: " + weights(1))
-//        println("expectedOutput: " + expectedOutput)
-//        println("output: " + output)
-//        println("error: " + error)
-//        println("weightUpdates: " + weightUpdates(1))
-
       }
 
       println("RoundError: " + RoundError)
@@ -192,24 +181,6 @@ object Run {
     }
     println("RoundError: " + RoundError)
 
-
-//    val inputVector = List(1.0, 1.0, 1.0, 1.0)
-//    val expectedOutput = List(1.0, 0.0)
-//
-//    val weights = createWeights(nodesPerLayer, false)
-//    val nn = new NeuralNetwork(nodesPerLayer, weights)
-//    println("expected output: " + expectedOutput)
-//
-//    val output = nn.runNetwork(inputVector)
-//    println("output1: " + output)
-//
-//    val error = nn.calcError(inputVector, expectedOutput, output)
-//    val weightUpdates = nn.backPropagate(inputVector, output, error, 0.1)
-//    val newWeights = addWeights(weightUpdates, weights)
-//
-//    val nn2 = new NeuralNetwork(List[Int](4, 3, 2), newWeights)
-//    val output2 = nn2.runNetwork(inputVector)
-//    println("output2: " + output2)
   }
 
 
