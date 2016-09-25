@@ -3,11 +3,35 @@ package main
 import scala.collection.mutable
 
 /**
-  * Created by masoud on 9/13/16.
+  * Neural Network training
+  * Back-propagation algorithm steps:
+  * 1- run the network and calculate the output for each layer
+  * 2- calculate the error:
+  *   - for node k in the output layer: delta_k = O_k (1 - O_k) (O_k - T_k)
+  *   where O_k is the output of node k and T_k is the expected output
+  *   - for each node j in other layers: delta_j = O_j (1 _ O_j) SIGMA (delata_k * Wjk)
+  *   where Wjk is the weight from node j to node k in the next layer. Sigma is on every node k in the next layer
+  * 3- weight update calculation: weight_update(i)(j)(k) = etta * delta_j * O_k
+  * where etta is etta is the learning factor
+  *
+  * @param nodePerLayer a list of number of nodes for each layer. Starts with input and input is layer 0
+  * @param weights weights used in the training.
+  *                The first list contains the weights of each layer  weights(i) are weights from layer i to layer i + 1
+  *                The second list contains the weights per nodes. weights(i)(j) is a list of weights fron all the nodes
+  *                in layer i to node j of layer i + 1
+  *                The third nested list is the list of weights: weights(i)(j)(k) is the weight from node k in layer i
+  *                to node j in layer i + 1
   */
 class NeuralNetwork(nodePerLayer: List[Int], weights: List[List[List[Double]]]) {
 
-  def runNetwork(input: List[Double]): List[List[Double]] = {
+  /**
+    * step 1 of the algorithm.
+    * Feed the input into the network and calculate the output of the other layers. Adds a bias of 1 to each layer.
+    *
+    * @param input inputs to the first layer
+    * @return for each layer, list of output of that layer
+    */
+  def calculateOutput(input: List[Double]): List[List[Double]] = {
     assert(input.size == nodePerLayer(0))
 
     var completeOutput: List[List[Double]] = List.empty
@@ -37,6 +61,14 @@ class NeuralNetwork(nodePerLayer: List[Int], weights: List[List[List[Double]]]) 
     completeOutput
   }
 
+  /**
+    * Step 2 of the algorithm.
+    *
+    * @param input input to the network
+    * @param expectedOutput expected output of the last layer
+    * @param calculatedOutput output calculated by step 1
+    * @return delta for each layer
+    */
   def calcError(input: List[Double], expectedOutput: List[Double], calculatedOutput: List[List[Double]]): List[List[Double]] = {
     assert(input.size == nodePerLayer(0))
 
@@ -46,6 +78,7 @@ class NeuralNetwork(nodePerLayer: List[Int], weights: List[List[List[Double]]]) 
       for { i <- 0 to unbiasedOutput.size - 1}
         yield { (if (i == unbiasedOutput.size - 1) List.empty else List(1.0)) ++ unbiasedOutput(i)}
 
+    // the part of the delta that depend on the expected output or nodes in the next layer
     var modifier: List[Double] =
       (calculatedOutput(nodePerLayer.size - 2) zip expectedOutput)
         .map { case (a, b) => a - b }
@@ -68,6 +101,15 @@ class NeuralNetwork(nodePerLayer: List[Int], weights: List[List[List[Double]]]) 
     error.reverse
   }
 
+  /**
+    * Step 3 of the algorithm.
+    *
+    * @param input input to the network
+    * @param calculatedOutput output of step 1
+    * @param error output of step 2
+    * @param learningFactor coefficient for dampening update
+    * @return updates for each weight given the input and expected output
+    */
   def backPropagate(input: List[Double], calculatedOutput: List[List[Double]], error: List[List[Double]], learningFactor: Double): List[List[List[Double]]] = {
     assert(input.size == nodePerLayer(0))
 

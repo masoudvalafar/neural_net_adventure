@@ -140,7 +140,7 @@ object Run {
     for {(outputString, inputVector) <- testData} {
       val expectedOutput = irises.get(outputString).get
       val nn = new NeuralNetwork(nodesPerLayer, weights)
-      val output = nn.runNetwork(inputVector)
+      val output = nn.calculateOutput(inputVector)
       RoundError = RoundError + (output(1) zip expectedOutput).map { case (c, e) => Math.pow((c - e), 2)}.reduce(_ + _)
     }
     println("RoundError: " + RoundError)
@@ -156,7 +156,7 @@ object Run {
       for {(outputString, inputVector) <- trainingData} {
         val expectedOutput = irises.get(outputString).get
         val nn = new NeuralNetwork(nodesPerLayer, weights)
-        val output = nn.runNetwork(inputVector)
+        val output = nn.calculateOutput(inputVector)
         val error = nn.calcError(inputVector, expectedOutput, output)
         val weightUpdates = nn.backPropagate(inputVector, output, error, learningFactor)
         layerWeight = addWeights(weightUpdates, layerWeight)
@@ -173,7 +173,7 @@ object Run {
     for {(outputString, inputVector) <- testData} {
       val expectedOutput = irises.get(outputString).get
       val nn = new NeuralNetwork(nodesPerLayer, weights)
-      val output = nn.runNetwork(inputVector)
+      val output = nn.calculateOutput(inputVector)
       RoundError = RoundError + (output(1) zip expectedOutput).map { case (c, e) => Math.pow((c - e), 2)}.reduce(_ + _)
       println("inputVector: " + inputVector)
       println("end output: " + output(1))
